@@ -17,13 +17,14 @@ options.register('skipEvents',
                  "Number of events to skip")
 
 options.register('processEvents',
-                 -1, # default value
+                 10000, # default value
                  VarParsing.VarParsing.multiplicity.singleton,
                  VarParsing.VarParsing.varType.int,
                  "Number of events to process")
 
+#"file:/afs/cern.ch/work/o/oviazlo/HCAL_PMG/CMSSW_11_3_0/src/HCALPFG/HcalTupleMaker/test/DATA/00bdf81d-eb84-4f5e-ae0d-9760eb633271.root",
 options.register('inputFiles',
-                 "file:/afs/cern.ch/work/o/oviazlo/HCAL_PMG/CMSSW_11_3_0/src/HCALPFG/HcalTupleMaker/test/DATA/00bdf81d-eb84-4f5e-ae0d-9760eb633271.root",
+                 "file:/eos/cms/store/group/dpg_hcal/comm_hcal/Commissioning2021/Cosmics/RAW/v1/000/341/570/00000/00d99360-42c6-4a56-8891-e8e97ef0da56.root",
                  VarParsing.VarParsing.multiplicity.list,
                  VarParsing.VarParsing.varType.string,
                  "Input files")
@@ -80,11 +81,11 @@ process.load('Configuration.Geometry.GeometryExtended2021Reco_cff')
 #  process.load('Configuration.StandardSequences.RawToDigi_Data_cff')
 process.load("EventFilter.HcalRawToDigi.HcalRawToDigi_cfi")
 
-#process.load('Configuration.StandardSequences.L1Reco_cff')
+process.load('Configuration.StandardSequences.L1Reco_cff')
 #process.load('Configuration.StandardSequences.Reconstruction_Data_cff')
 process.load("RecoLocalCalo.Configuration.hcalLocalReco_cff")
 #process.load("RecoLocalCalo.Configuration.RecoLocalCalo_Cosmics_cff")
-
+process.load("HCALPFG.HcalTupleMaker.HcalTupleMaker_Trigger_cfi")
 process.load('Configuration.StandardSequences.EndOfProcess_cff')
 process.load('RecoMET.METProducers.hcalnoiseinfoproducer_cfi')
 process.load("CommonTools.RecoAlgos.HBHENoiseFilter_cfi")
@@ -140,30 +141,29 @@ print("Point 1")
 process.tuple_step = cms.Sequence(
     ## Make HCAL tuples: Event info
     process.hcalTupleEvent*
-
     ## Make HCAL tuples: FED info
-    #process.hcalTupleFEDs*
+    process.hcalTupleFEDs*
 
     ## Make HCAL tuples: digi info
-    #  process.hcalTupleHBHEDigis*
-    #  process.hcalTupleHODigis*
-    #  process.hcalTupleHFDigis*
+    process.hcalTupleHBHEDigis*
+    process.hcalTupleHODigis*
+    process.hcalTupleHFDigis*
     process.hcalTupleQIE10Digis* # for HF
     process.hcalTupleQIE11Digis*
-    #  process.hcalTupleHBHECosmicsDigis*
+    process.hcalTupleHBHECosmicsDigis*
 
     ## Make HCAL tuples: reco info
-    #process.hcalTupleHBHERecHits*
-    #  process.hcalTupleHFRecHits*
-    #process.hcalTupleHORecHits*
+    process.hcalTupleHBHERecHits*
+    process.hcalTupleHFRecHits*
+    process.hcalTupleHORecHits*
 
     ## Make HCAL tuples: trigger info
-    #process.hcalTupleTrigger*
-    #process.hcalTupleTriggerPrimitives*
-    #process.hcalTupleTriggerObjects*
+    process.hcalTupleTrigger*
+    process.hcalTupleTriggerPrimitives*
+    process.hcalTupleTriggerObjects*
 
     # noise filter
-#    process.hcalTupleHcalNoiseFilters*
+    #process.hcalTupleHcalNoiseFilters*
 
     ## Package everything into a tree
     process.hcalTupleTree
@@ -181,25 +181,25 @@ print("Point 2")
 #-----------------------------------------------------------------------------------
 process.preparation = cms.Path(
     process.my_hlt *
-    #  process.hcalDigis*
+    process.hcalDigis*
     process.qie10Digis*
     process.qie11Digis*
 
     ## reconstruction
-    #process.L1Reco*
+    process.L1Reco*
     #process.reconstruction*
-    #process.hcalLocalRecoSequence*
+    process.hcalLocalRecoSequence*
 
     ## Do energy reconstruction
-    #process.horeco*
-#    process.hfprereco*
-#    process.hfreco*
-#    process.hbheprereco*
-#    process.hbheplan1*
+    process.horeco*
+    process.hfprereco*
+    process.hfreco*
+    process.hbheprereco*
+    process.hbheplan1*
 
     ## For noise filter
-#    process.hcalnoise*
-#    process.HBHENoiseFilterResultProducer*
+    process.hcalnoise*
+    process.HBHENoiseFilterResultProducer*
     #process.ApplyBaselineHBHENoiseFilter*
 
     ## Make the ntuples
