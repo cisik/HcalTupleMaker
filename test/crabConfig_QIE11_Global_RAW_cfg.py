@@ -16,7 +16,7 @@
 #    crab getoutput -d <CRAB-project-directory> [--jobids <comma-separated-list-of-jobs-and/or-job-ranges>]
 # -----------------------------------------------------------------------------------------------------------------------------
 from CRABClient.UserUtilities import config
-from CRABClient.UserUtilities import getUsernameFromSiteDB
+#from CRABClient.UserUtilities import getUsernameFromSiteDB
 
 
 # Select dataset to crab over
@@ -34,23 +34,26 @@ datasetnames = [
 #'/MET/Run2017B-v1/RAW'
 #'/JetHT/Run2017B-v1/RAW'
 #'/ZeroBias/Commissioning2018-v1/RAW',
-'/IsolatedBunch/Run2018A-v1/RAW',
+#'/IsolatedBunch/Run2018A-v1/RAW',
 #'/MinimumBias/Commissioning2018-v1/RAW'
+'/Cosmics/Commissioning2021-v1/RAW'
 ]
 
 # Storage path for output files - EOS specific
 #storagepath = '/store/user/'+getUsernameFromSiteDB()+'/HCALnoise2016'
 #storagepath = '/store/group/dpg_hcal/comm_hcal/Noise/2017/' # DO NOT USE
+storagepath = '/eos/cms/store/user/cisik/HCAL_CRUZET/'
+
 
 # cmsRun file
-psetname = 'test/pfg_QIE11_Global_RAW_cfg.py'
+psetname = 'test/cosmics_overnight_CRUZET_global_runs.py'
 
 # Output filename
-OutputFilename = 'results.root'
+OutputFilename = 'resultsR343642.root'
 
 # Storage site of output files
-#storageSite = 'T2_CH_CERN'
-storageSite = 'T2_US_UCSD' 
+storageSite = 'T2_CH_CERN'
+#storageSite = 'T2_US_UCSD' 
 
 # White list sites
 whiteList = ['T2_CH_CERN','T2_US_Caltech','T2_US_Florida', 'T2_US_MIT', 'T2_US_Nebraska', 'T2_US_Purdue', 'T2_US_UCSD', 'T2_US_Vanderbilt', 'T2_US_Wisconsin', 'T1_US_FNAL','T2_US_MIT']
@@ -92,7 +95,8 @@ config.Data.unitsPerJob      = 3
 config.Data.ignoreLocality   = True
 #config.Data.outLFNDirBase    = storagepath
 config.Data.publication      = False
-config.Data.outputDatasetTag = dataset[1]+'_'+dataset[2]+timestamp
+#config.Data.outputDatasetTag = dataset[1]+'_'+dataset[2]+timestamp
+config.Data.outputDatasetTag = '113X_dataRun3_HLT_v3'
 #config.Data.lumiMask         = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Reprocessing/Cert_13TeV_16Dec2015ReReco_Collisions15_25ns_JSON.txt'
 #config.Data.runRange         = '254231-260627'
 #config.Data.runRange        = '260577-260578' #for test
@@ -104,6 +108,7 @@ config.Data.outputDatasetTag = dataset[1]+'_'+dataset[2]+timestamp
 #config.Data.runRange        = '297723-297723'
 
 #config.Data.runRange        =  '315149-315173'#'314470-314505'
+config.Data.runRange        =  '343642'
 
 # -----------------------------------------------------------------------------------------------------------------------------
 # JSON files are available at: /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/
