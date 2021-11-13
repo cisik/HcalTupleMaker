@@ -23,31 +23,37 @@ options.register('processEvents',
                  "Number of events to process")
 
 options.register('inputFiles',
-                 "root://cmsxrootd.fnal.gov//store/express/Commissioning2017/ExpressPhysics/FEVT/Express-v1/000/293/591/00000/F45D88B0-A234-E711-B36A-02163E01A6B2.root", # default value
+                 #"root://cmsxrootd.fnal.gov//store/express/Commissioning2017/ExpressPhysics/FEVT/Express-v1/000/293/591/00000/F45D88B0-A234-E711-B36A-02163E01A6B2.root", # default value
+                 #'/store/express/Commissioning2021/ExpressPhysics/FEVT/Express-v1/000/346/050/00000/45eda6ac-e4bf-4972-ad52-01922f1f09e7.root',
+                 #"file:/afs/cern.ch/user/d/dkonst/public/splashEvents2021/skimSplashEvents2021_run_345881_1.root", 
+                 #"file:/afs/cern.ch/user/d/dkonst/public/splashEvents2021/skimSplashEvents2021_run_345881_2.root",
+                 #"file:/afs/cern.ch/user/d/dkonst/public/splashEvents2021/skimSplashEvents2021_run_346050.root",
+                 "file:/afs/cern.ch/user/d/dkonst/public/splashEvents2021/skimSplashEvents2021_run_345922.root", 
+                 
                  VarParsing.VarParsing.multiplicity.list,
                  VarParsing.VarParsing.varType.string,
                  "Input files")
 
 options.register('outputFile',
-                 "HcalTupleMaker.root", # default value
+                 "Result_SplashR345922_v1.root", # default value
                  VarParsing.VarParsing.multiplicity.singleton,
                  VarParsing.VarParsing.varType.string,
                  "Output file")
 
 options.parseArguments()
 
-print " "
-print "Using options:"
-print " skipEvents    =", options.skipEvents
-print " processEvents =", options.processEvents
-print " inputFiles    =", options.inputFiles
-print " outputFile    =", options.outputFile
-print " "
+print (" ")
+print ("Using options:")
+print (" skipEvents    =", options.skipEvents)
+print (" processEvents =", options.processEvents)
+print (" inputFiles    =", options.inputFiles)
+print (" outputFile    =", options.outputFile)
+print (" ")
 
 #------------------------------------------------------------------------------------
 # Declare the process and input variables
 #------------------------------------------------------------------------------------
-process = cms.Process('PFG',eras.Run2_2017)
+process = cms.Process('PFG',eras.Run3)
 
 #------------------------------------------------------------------------------------
 # Get and parse the command line arguments
@@ -70,7 +76,7 @@ process.TFileService = cms.Service(
 #------------------------------------------------------------------------------------
 process.load('Configuration.StandardSequences.Services_cff')
 process.load('FWCore.MessageService.MessageLogger_cfi')
-process.MessageLogger.cerr.FwkReport.reportEvery = cms.untracked.int32(1000)
+#process.MessageLogger.cerr.FwkReport.reportEvery = cms.untracked.int32(1000)
 process.load('Configuration.EventContent.EventContent_cff')
 process.load('Configuration.StandardSequences.GeometryRecoDB_cff')
 process.load('Configuration.StandardSequences.RawToDigi_Data_cff')
@@ -79,25 +85,28 @@ process.load('Configuration.StandardSequences.EndOfProcess_cff')
 process.load('RecoMET.METProducers.hcalnoiseinfoproducer_cfi')
 process.load("CommonTools.RecoAlgos.HBHENoiseFilter_cfi")
 process.load("CommonTools.RecoAlgos.HBHENoiseFilterResultProducer_cfi")
-process.load("CondCore.CondDB.CondDB_cfi")
+#process.load("CondCore.CondDB.CondDB_cfi")
 #process.load('RecoLocalCalo.Configuration.RecoLocalCalo_Cosmics_cff')
-process.load("RecoLocalCalo.Configuration.hcalLocalReco_cff")
+#process.load("RecoLocalCalo.Configuration.hcalLocalReco_cff")
 #process.load("EventFilter.HcalRawToDigi.HcalRawToDigi_cfi")
+
 #------------------------------------------------------------------------------------
 # Set up our analyzer
 #------------------------------------------------------------------------------------
 process.load("HCALPFG.HcalTupleMaker.HcalTupleMaker_cfi") # loads all modules
-process.load("HCALPFG.HcalTupleMaker.HcalTupleMaker_Trigger_cfi")
 ## set desired parameters, for example:
-process.hcalTupleHFDigis.DoEnergyReco = False
-process.hcalTupleHFDigis.FilterChannels = False
-process.hcalTupleHBHERecHits.source = cms.untracked.InputTag("hbheplan1")
-process.hcalTupleHBHEDigis.recHits = cms.untracked.InputTag("hbheplan1")
+process.hcalTupleHFDigis.DoEnergyReco = True
+#process.hcalTupleHFDigis.FilterChannels = False
+#process.hcalTupleHBHERecHits.source = cms.untracked.InputTag("hbheplan1")
+#process.hcalTupleHBHEDigis.recHits = cms.untracked.InputTag("hbheplan1")
 process.hcalTupleHBHEDigis.DoEnergyReco = cms.untracked.bool(False)
+process.hcalTupleHODigis.DoEnergyReco = cms.untracked.bool(False)
 process.hcalTupleHFDigis.ChannelFilterList = cms.untracked.VPSet(
     # Notice only channels listed here will be saved, if the FilterChannels flag is set to true
     cms.PSet(iEta = cms.int32(29), iPhi = cms.int32(39), depth = cms.int32(1)),
     )
+
+'''
 
 from Configuration.StandardSequences.RawToDigi_Data_cff import *
 process.CustomizedRawToDigi = cms.Sequence(
@@ -114,6 +123,7 @@ process.CustomizedRawToDigi = cms.Sequence(
         #scalersRawToDigi*
         #tcdsDigis
 )
+'''
 
 #------------------------------------------------------------------------------------
 # FED numbers 
@@ -130,23 +140,27 @@ process.CustomizedRawToDigi = cms.Sequence(
 #------------------------------------------------------------------------------------
 # QIE10  Unpacker
 #------------------------------------------------------------------------------------
-process.qie10Digis = process.hcalDigis.clone()
+#process.qie10Digis = process.hcalDigis.clone()
+#process.hcalDigis.saveQIE10DataNSamples = cms.untracked.vint32(3)
+#process.hcalDigis.saveQIE10DataTags = cms.untracked.vstring( "MYDATA" )
 #process.qie10Digis.FEDs = cms.untracked.vint32(1118,1120,1122,1119,1121,1123)
 
 #------------------------------------------------------------------------------------
 # QIE11  Unpacker
 #------------------------------------------------------------------------------------
-process.qie11Digis = process.hcalDigis.clone()
+#process.qie11Digis = process.hcalDigis.clone()
+#process.hcalDigis.saveQIE11DataNSamples = cms.untracked.vint32(3)
+#process.hcalDigis.saveQIE11DataTags = cms.untracked.vstring( "MYDATA" )
 #process.qie11Digis.InputLabel = cms.InputTag("source") 
 #process.qie11Digis.FEDs = cms.untracked.vint32(1114)
 
 #------------------------------------------------------------------------------------
 # Specify Global Tag
 #------------------------------------------------------------------------------------
-process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff')
-process.GlobalTag.globaltag = '101X_dataRun2_HLT_v7'
-print "GlobalTag = ", str(process.GlobalTag.globaltag).split("'")[1]
-print " "
+process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
+process.GlobalTag.globaltag = '120X_dataRun3_HLT_v3'
+print ("GlobalTag = ", str(process.GlobalTag.globaltag).split("'")[1])
+print (" ")
 
 #------------------------------------------------------------------------------------
 # Create Noise Filter
@@ -171,11 +185,11 @@ process.tuple_step = cms.Sequence(
     #process.hcalTupleFEDs*
     
     ## Make HCAL tuples: digi info
-    process.hcalTupleHBHEDigis*
+    #process.hcalTupleHBHEDigis*
     #process.hcalTupleHODigis*
     #process.hcalTupleHFDigis*
     process.hcalTupleQIE10Digis* # for HF
-    process.hcalTupleQIE11Digis* # for HEP17
+    process.hcalTupleQIE11Digis* # for HBHE
     
     ## Make HCAL tuples: reco info
     #process.hcalTupleHBHERecHits*
@@ -184,7 +198,7 @@ process.tuple_step = cms.Sequence(
     #process.hcalTupleHFRecHits*
 
     ## Make HCAL tuples: trigger info
-    process.hcalTupleTrigger*
+    #process.hcalTupleTrigger*
     #process.hcalTupleTriggerPrimitives*
     #process.hcalTupleTriggerObjects*
 
@@ -192,17 +206,20 @@ process.tuple_step = cms.Sequence(
     process.hcalTupleTree
 )
 
+process.hcalTupleQIE10Digis.tagQIE10 = "hcalDigis"
+process.hcalTupleQIE11Digis.tagQIE11 = "hcalDigis"
+
 #-----------------------------------------------------------------------------------
 # Path and EndPath definitions
 #-----------------------------------------------------------------------------------
 process.preparation = cms.Path(
     ## Unpack digis from RAW
-    process.RawToDigi*
+    #process.RawToDigi*
     #process.CustomizedRawToDigi*
     #process.gtDigis*
-    #process.hcalDigis*
-    process.qie10Digis*
-    process.qie11Digis*
+    process.hcalDigis*
+    #process.qie10Digis*
+    #process.qie11Digis*
     
     ## reconstruction 
     #process.L1Reco*
